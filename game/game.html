@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #all {
+            margin: 50px 0;
+        }
+
+        #all2 {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        #tool {
+            width: 250px;
+            line-height: 5px;
+        }
+
+        #tool input {
+            width: 70px;
+        }
+
+        #txt {
+            width: 250px;
+            color: cornflowerblue;
+            display: inline;
+            text-align: center;
+            margin-right: 50px;
+        }
+
+        #tables {
+            margin: 0 auto;
+        }
+
+        #tables td {
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="all">
+        <div id="all2">
+            <div id="tool">
+                <p>遊戲時間：　　<input type="text" name="" value="30" id="gameTime" /><label>秒</label></p>
+                <p>出現間隔：　　<input type="text" name="" value="1" id="spaceTime" /><label>秒</label></p>
+                <p>出現隻數(最大): <input type="number" value="3" name="" id="num">隻</p>
+                <p>倒數時間：　　<label id="lastTime">0</label>秒</p>
+                <p>得分情況：　　<label id="account">0</label>分</p>
+                　　　<input type="button" onclick="start()" id="startGame" value="開始遊戲" />
+                　　<input type="button" onclick="stop()" id="overGame" disabled="true" value="退出遊戲" />
+            </div>
+            <div id="txt">
+                <p>遊戲說明</p>
+                <p>
+                    點擊"開始遊戲"按鈕，在下圖中隨機產生老鼠，老鼠消失前單擊老鼠進行擊打，打中一次即可獲得100積分，如果沒有打中老鼠，扣100積分。快來試試吧，考驗您的反應和眼力。
+                </p>
+            </div>
+
+        </div>
+        <table id="tables">
+            <tr>
+                <td><img src="img/00.jpg"></td>
+                <td><img src="img/00.jpg"></td>
+                <td><img src="img/00.jpg"></td>
+                <td><img src="img/00.jpg"></td>
+                <td><img src="img/00.jpg"></td>
+            </tr>
+
+            <tr>
+                <td><img src="img/00.jpg"></td>
+                <td><img src="img/00.jpg"></td>
+                <td><img src="img/00.jpg"></td>
+                <td><img src="img/00.jpg"></td>
+                <td><img src="img/00.jpg"></td>
+            </tr>
+
+            <tr>
+                <td><img src="img/00.jpg"></td>
+                <td><img src="img/00.jpg"></td>
+                <td><img src="img/00.jpg"></td>
+                <td><img src="img/00.jpg"></td>
+                <td><img src="img/00.jpg"></td>
+            </tr>
+
+            <tr>
+                <td><img src="img/00.jpg"></td>
+                <td><img src="img/00.jpg"></td>
+                <td><img src="img/00.jpg"></td>
+                <td><img src="img/00.jpg"></td>
+                <td><img src="img/00.jpg"></td>
+            </tr>
+
+            <tr>
+                <td><img src="img/00.jpg"></td>
+                <td><img src="img/00.jpg"></td>
+                <td><img src="img/00.jpg"></td>
+                <td><img src="img/00.jpg"></td>
+                <td><img src="img/00.jpg"></td>
+            </tr>
+        </table>
+        <!-- <audio id="audio" loop="loop" src="img/sound.mp3"></audio> -->
+    </div>
+
+    <script type="text/javascript">
+        //1 先獲取到所有的坑(圖片)
+        let tables = document.getElementById('tables'),
+            image = tables.getElementsByTagName('img'),
+            startGame = document.getElementById("startGame"),
+            gameTime = document.getElementById("gameTime"),
+            num = document.getElementById("num"),
+            overGame = document.getElementById("overGame"),
+            lastTime = document.getElementById("lastTime"),
+            spaceTime = document.getElementById("spaceTime"),
+            setspaceTime,
+            numvalue,
+            time,
+            settime,
+            score = 0,
+            account = document.getElementById("account"),
+            appeartimer = [];
+
+        //開始按鈕事件
+        function start() {
+            //播放音效
+            // document.getElementById('audio').play();
+            //遍歷每個圖片失敗事件
+            for (var i = 0; i < 25; i++) {
+                image[i].setAttribute("onclick", "fail()");
+            }
+            //鎖定input欄位
+            startGame.setAttribute("disabled", true);
+            spaceTime.setAttribute("disabled", true);
+            gameTime.setAttribute("disabled", true);
+            num.setAttribute("disabled", true);
+            overGame.removeAttribute("disabled");
+            //獲取遊戲總時間秒數
+            time = Number(gameTime.value);
+            settime = gameTime.value;
+            numvalue = Number(document.getElementById('num').value);
+            spaceTimeValue = Number(spaceTime.value) * 1000;
+            setspaceTime = Number(spaceTime.value);
+            //開始倒計時
+            settimer();
+        }
+
+
+        //倒計時事件
+        function settimer() {
+            if (time == 0) {
+                //倒計時結束停止遊戲
+                lastTime.innerText = time;
+                stop();
+            } else {
+                //每次遞減每秒遞歸執行輸出顯示
+                lastTime.innerText = time;
+                time -= spaceTimeValue / 1000;
+                appear();
+                t = setTimeout(function () {
+                    settimer()
+                }, spaceTimeValue);
+            }
+
+        }
+        //讓老鼠隨機出現
+        function appear() {
+            //根據隻數判斷隨機出現位置
+            for (let i = 0; i < numvalue; i++) {
+                let r = Math.floor(Math.random() * 25);
+                image[r].src = "img/01.jpg";
+                //刪除fail事件
+                image[r].removeAttribute("onclick", "fail()");
+                //增加catch事件
+                image[r].setAttribute("onclick", `get(${r})`);
+                appeartimer[i] = setTimeout(function () {
+                    score -= 100;
+                    account.innerText = score;
+                    image[r].src = "img/00.jpg";
+                    image[r].removeAttribute("onclick", "get()");
+                    image[r].setAttribute("onclick", "fail()");
+                }, spaceTimeValue)
+            }
+        }
+        //catch事件
+        function get(r) {
+            score += 100
+            account.innerText = score;
+            image[r].src = "img/00.jpg";
+            image[r].removeAttribute("onclick", "get()");
+            image[r].setAttribute("onclick", "fail()");
+        }
+
+        function fail() {
+            score -= 100
+            account.innerText = score;
+        }
+
+        function stop() {
+            //暫停音效
+            // document.getElementById('audio').pause();
+            alert("最終得分:" + score);
+            //清除所有計時器
+            clearTimeout(t);
+            for (let i in appeartimer) {
+
+                clearTimeout(appeartimer[i]);
+            }
+            //啓用控件狀態
+            spaceTime.value = setspaceTime;
+            gameTime.value = settime;
+            lastTime.innerText = settime;
+            account.innerText = "0";
+            startGame.removeAttribute("disabled");
+            num.removeAttribute("disabled");
+            spaceTime.removeAttribute("disabled");
+            gameTime.removeAttribute("disabled");
+            overGame.setAttribute("disabled", true);
+            //初始化所有圖片事件
+            for (var i = 0; i < 25; i++) {
+                image[i].removeAttribute("onclick", "fail()");
+                image[i].removeAttribute("onclick", "get()");
+                image[i].src = "img/00.jpg";
+            }
+        }
+    </script>
+</body>
+
+</html>
